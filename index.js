@@ -1,29 +1,52 @@
 console.log('okex price checker start!!!!!!!!!!!!!!!!');
 console.log('now version is : 1.0.0');
-var WebSocketClient = require('websocket').client;
+// var WebSocketClient = require('websocket').client;
 
-var client = new WebSocketClient();
-// 监听连接失败事件，打印错误日志
-client.on('connectFailed', error => console.log('Connect Error: ' + error.toString()))
-// 监听连接成功事件
-client.on('connect', connection => {
-  console.log('OKEX server connect success!------------');
-  // 连接出错
-  connection.on('error', error => console.log("Connection Error: " + error.toString()));
-  // 监听连接断开事件
-  connection.on('close', () => console.log('OKEX server connect close!------------'));
-  // 监听收到信息事件
-  connection.on('message', message => {
-    // 打印行情
-    console.log(message.utf8Data);
-  });
-  // 发送监听BTC本周合约行情信息
-  // connection.sendUTF("{'event':'addChannel','channel':'ok_sub_futureusd_btc_ticker_this_week'}");
-  connection.sendUTF("{'event':'addChannel','channel':'ok_sub_futureusd_btc_kline_this_week_4hour'}");
+// var client = new WebSocketClient();
+// // 监听连接失败事件，打印错误日志
+// client.on('connectFailed', error => console.log('Connect Error: ' + error.toString()))
+// // 监听连接成功事件
+// client.on('connect', connection => {
+//   console.log('OKEX server connect success!------------');
+//   // 连接出错
+//   connection.on('error', error => console.log("Connection Error: " + error.toString()));
+//   // 监听连接断开事件
+//   connection.on('close', () => console.log('OKEX server connect close!------------'));
+//   // 监听收到信息事件
+//   connection.on('message', message => {
+//     // 打印行情
+//     console.log(message.utf8Data);
+//   });
+//   // 发送监听BTC本周合约行情信息
+//   // connection.sendUTF("{'event':'addChannel','channel':'ok_sub_futureusd_btc_ticker_this_week'}");
+//   connection.sendUTF("{'event':'addChannel','channel':'ok_sub_futureusd_btc_kline_this_week_4hour'}");
+// });
+
+// client.connect('wss://real.okex.com:10440/websocket/okexapi');
+
+const SMSClient = require('@alicloud/sms-sdk');
+// ACCESS_KEY_ID/ACCESS_KEY_SECRET 根据实际申请的账号信息进行替换
+const accessKeyId = 'xxx';
+const secretAccessKey = 'xxx';
+//初始化sms_client
+let smsClient = new SMSClient({ accessKeyId, secretAccessKey });
+//发送短信
+smsClient.sendSMS({
+  PhoneNumbers: 'xxx',
+  SignName: 'xxx',
+  TemplateCode: 'xxx',
+  TemplateParam: '{"type":"买","price_quarter":"0","price_this_week":"1","price_now":"2"}',
+}).then(function(res) {
+  let { Code } = res;
+  if (Code === 'OK') {
+    //处理返回参数
+    console.log(res);
+  }
+}, function(err) {
+  console.log(err);
 });
 
-client.connect('wss://real.okex.com:10440/websocket/okexapi');
-
+const kline30minAPI = 'https://www.okex.com/api/v1/future_kline.do?type=30min&symbol=btc_usd&contract_type=quarter&since=1503158400000';
 //doSend("{'event':'addChannel','channel':'ok_sub_futureusd_btc_ticker_this_week'}");
 //doSend("{'event':'addChannel','channel':'ok_sub_futureusd_btc_ticker_next_week'}");
 //doSend("{'event':'addChannel','channel':'ok_sub_futureusd_btc_ticker_quarter'}");

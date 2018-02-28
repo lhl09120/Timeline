@@ -9,6 +9,7 @@
   "author": "09120",
   "license": "ISC",
   "dependencies": {
+    "@alicloud/sms-sdk": "^1.0.8",
     "socket.io-client": "^2.0.4",
     "websocket": "^1.0.25"
   }
